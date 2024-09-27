@@ -25,7 +25,7 @@ namespace Infraestructure.Auth
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "Ancona autopartes - Dashboard",
+                    Title = "Practicas",
                     Description = "Esta API será responsable de la distribución y autorización general de los datos.",
                 });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
