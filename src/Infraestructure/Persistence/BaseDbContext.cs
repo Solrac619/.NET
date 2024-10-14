@@ -66,6 +66,7 @@ namespace Infraestructure.Persistence
                 foreach (var entry in ChangeTracker.Entries())
                 {
                     entry.State = EntityState.Detached;
+                    Console.WriteLine(ex.InnerException?.Message);
                 }
                 throw;
             }
