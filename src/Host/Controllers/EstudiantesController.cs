@@ -1,9 +1,13 @@
 ﻿using ApplicationCore.Commands;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Wrappers;
+using Infraestructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Data;
 
 namespace Host.Controllers
 {
@@ -14,10 +18,15 @@ namespace Host.Controllers
 
         private readonly IEstudiantesService _service;
         private readonly IMediator _mediator;
-        public EstudiantesController(IEstudiantesService service, IMediator mediator)
+        private readonly ApplicationDbContext _context;
+
+
+        public EstudiantesController(IEstudiantesService service, IMediator mediator, ApplicationDbContext context)
         {
             _service = service;
             _mediator = mediator;
+            _context = context;
+
         }
 
         [HttpGet("getEstudiantes")]
@@ -33,7 +42,22 @@ namespace Host.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEstudentes(int id)
+        {
+            var Estudiantes = await _context.Estudiantes.FindAsync(id);
 
-      
-    }
+            if (Estudiantes == null)
+            {
+                return NotFound();
+            }
+
+            _context.Estudiantes.Remove(Estudiantes);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+    
+
+}
 }
