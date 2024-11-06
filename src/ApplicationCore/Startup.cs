@@ -13,6 +13,8 @@ namespace ApplicationCore
             return services
                 .AddAutoMapper(assembly)
                 .AddValidatorsFromAssembly(assembly);
+                
+
         }
     }
 }
