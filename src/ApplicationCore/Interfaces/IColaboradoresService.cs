@@ -11,7 +11,8 @@ namespace ApplicationCore.Interfaces
     public interface IColaboradoresService
     {
         Task<Response<object>> GetColaboradores();
-        Task<IEnumerable<ColaboradorDTO>> GetColaboradoresByFechaIngreso(DateTime fechaIngreso);
+        Task<IEnumerable<ColaboradorDTO>> GetColaboradoresFiltrados(DateTime? fechaInicio = null, DateTime? fechaFin = null, int? edad = null, bool? isProfesor = null);
+
 
     }
 }

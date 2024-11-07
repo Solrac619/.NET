@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Data;
 using ApplicationCore.DTOs;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore.Update;
 namespace Infraestructure.Services
 {
     public class ColaboradoresService : IColaboradoresService
@@ -28,14 +29,29 @@ namespace Infraestructure.Services
             return new Response<object>(list);
         }
 
-        public async Task<IEnumerable<ColaboradorDTO>> GetColaboradoresByFechaIngreso(DateTime fechaIngreso)
+
+        // modifica el controlador para que me permita hacer el filtro de fecha de todo los colaboradores creados en fechaInicio a FechaEnd, y que si no quiero filtrar por fecha pueda filtrar por edad, y si no quiero ninguna tambien pueda por si es profesor o admin, el cual me da si el Isprofesor es true o false
+        public async Task<IEnumerable<ColaboradorDTO>> GetColaboradoresFiltrados(DateTime? fechaInicio = null, DateTime? fechaFin = null, int? edad = null, bool? isProfesor = null)
         {
-            // Consulta a la base de datos para obtener los colaboradores con fecha de creación posterior a la fecha de ingreso
-            var colaboradores = await _dbcontext.Set<Colaboradores>()
-                .Where(c => c.FechaCreacion >= fechaIngreso)
+            var query = _dbcontext.Set<Colaboradores>().AsQueryable();
+
+            if (fechaInicio.HasValue && fechaFin.HasValue)
+            {
+                query = query.Where(c => c.FechaCreacion >= fechaInicio && c.FechaCreacion <= fechaFin);
+            }
+            else if (edad.HasValue)
+            {
+                query = query.Where(c => c.Edad == edad);
+            }
+
+            if (isProfesor.HasValue)
+            {
+                query = query.Where(c => c.IsProfesor == isProfesor.Value);
+            }
+
+            var colaboradores = await query
                 .Select(c => new ColaboradorDTO
                 {
-                
                     Nombre = c.Nombre,
                     Edad = c.Edad,
                     BirthDate = c.BirthDate,
@@ -43,8 +59,9 @@ namespace Infraestructure.Services
                     FechaCreacion = c.FechaCreacion
                 })
                 .ToListAsync();
+
             return colaboradores;
         }
+
     }
 }
-    

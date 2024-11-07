@@ -30,19 +30,23 @@ namespace Host.Controllers
             _mediator = mediator;
             _context = context;
         }
-        [HttpGet("getColaboradoresByFechaIngreso")]
-        public async Task<IActionResult> GetColaboradoresByFechaIngreso([FromQuery] DateTime fechaIngreso)
+        [HttpGet("getColaboradoresFiltrados")]
+        public async Task<IActionResult> GetColaboradoresFiltrados(
+        [FromQuery] DateTime? fechaInicio = null,
+        [FromQuery] DateTime? fechaFin = null,
+        [FromQuery] int? edad = null,
+        [FromQuery] bool? isProfesor = null)
         {
-            // Llamada al servicio para obtener los colaboradores
-            var colaboradores = await _service.GetColaboradoresByFechaIngreso(fechaIngreso);
-            // Si no se encontraron colaboradores, retornamos un 404
+            var colaboradores = await _service.GetColaboradoresFiltrados(fechaInicio, fechaFin, edad, isProfesor);
+
             if (colaboradores == null || !colaboradores.Any())
             {
-                return NotFound("No se encontraron colaboradores."); // Retorna un 404 con un mensaje
+                return NotFound("No se encontraron colaboradores con los criterios especificados.");
             }
-            // Si se encuentran colaboradores, retornamos los datos
-            return Ok(colaboradores); // Retorna los datos en formato OK
+
+            return Ok(colaboradores);
         }
+
 
         [HttpPost("create")]
         public async Task<Response<int>> CreateColaborador(ColaboradorDTO colaboradoresDto)
