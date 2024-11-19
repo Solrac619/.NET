@@ -20,6 +20,7 @@ namespace Infraestructure.Persistence
         public DbSet<jugador> jugador { get; set; }
         public DbSet<Estudiantes> Estudiantes { get; set; }
 
+
         public DbSet<Colaboradores> colaboradores { get; set; }
 
         public DbSet<Administrativo> administrativos { get; set; }

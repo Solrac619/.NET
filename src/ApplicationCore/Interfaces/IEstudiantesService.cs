@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Wrappers;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ApplicationCore.Interfaces
 {
     public interface IEstudiantesService
     {
-        Task<Response<object>> GetEstudiantes();
+        Task<Response<List<Estudiantes>>> GetEstudiantes();
 
     }
 }

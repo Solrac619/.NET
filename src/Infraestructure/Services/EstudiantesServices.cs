@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using Domain.Entities;
+using ApplicationCore.Mappings;
 namespace Infraestructure.Services
 {
     public class EstudiantesServices : IEstudiantesService
@@ -19,11 +21,25 @@ namespace Infraestructure.Services
             _dbcontext = dbcontext;
         }
 
-        public async Task<Response<object>> GetEstudiantes()
+        public async Task<Response<List<Estudiantes>>> GetEstudiantes()
         {
-            object list = new object();
-            list = await _dbcontext.Estudiantes.ToListAsync();
-            return new Response<object>(list);  
+            var estudiantes = await _dbcontext.Estudiantes.ToListAsync();
+
+            // Diagnóstico
+            Console.WriteLine("Estudiantes obtenidos:");
+            foreach (var estudiante in estudiantes)
+            {
+                Console.WriteLine($"ID: {estudiante.id}, Nombre: {estudiante.nombre}, Correo: {estudiante.correo}");
+            }
+
+            if (estudiantes == null || estudiantes.Count == 0)
+            {
+                return new Response<List<Estudiantes>>(new List<Estudiantes>(), "No se encontraron estudiantes.", false);
+            }
+
+            return new Response<List<Estudiantes>>(estudiantes, "Estudiantes obtenidos exitosamente.");
         }
+
     }
 }
+

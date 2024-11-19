@@ -4,24 +4,24 @@
     {
         public Response()
         {
+            Succeeded = false; // Por defecto, no se ha tenido éxito
         }
-        public Response(T data, string message = null)
+
+        public Response(T data, string message = null, bool succeeded = true)
         {
-            Succeeded = true;
+            Data = data;
             Message = message;
-            Result = data;
+            Succeeded = succeeded;
         }
+
         public Response(string message)
         {
             Succeeded = false;
             Message = message;
         }
 
-
-
-        public bool Succeeded { get; set; }
-        public string Message { get; set; }
-        public List<string> Errors { get; set; }
-        public T Result { get; set; }
+        public bool Succeeded { get; set; } // Indica si la operación fue exitosa
+        public string Message { get; set; } // Mensaje opcional de respuesta
+        public T Data { get; set; }         // Datos devueltos
     }
 }

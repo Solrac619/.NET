@@ -6,8 +6,13 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PdfSharp.Drawing;
 using System;
 using System.Data;
+using PdfSharp.Pdf;
+using System.IO;
+using System.Linq;
+using Domain.Entities;
 
 namespace Host.Controllers
 {
@@ -57,7 +62,60 @@ namespace Host.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("createEstudiantesPdf")]
+        public async Task<IActionResult> CreateEstudiantesPdf()
+        {
+            XFont fontBold = new XFont("Verdana", 12, XFontStyleEx.Bold);
+            XFont fontNormal = new XFont("Verdana", 12, XFontStyleEx.Regular);
+
+            // Llamada al servicio para obtener los estudiantes
+            var estudiantesResponse = await _service.GetEstudiantes();
+
+            // Verificar si la respuesta es válida
+            if (!estudiantesResponse.Succeeded || estudiantesResponse.Data == null || !estudiantesResponse.Data.Any())
+            {
+                return NotFound("No se encontraron estudiantes.");
+            }
+
+            var estudiantesList = estudiantesResponse.Data; // Obtener la lista de estudiantes
+
+            // Crear el documento PDF
+            using (var document = new PdfDocument())
+            {
+                document.Info.Title = "Lista de Estudiantes";
+                var page = document.AddPage();
+                page.Size = PdfSharp.PageSize.A4;
+                page.Orientation = PdfSharp.PageOrientation.Portrait;
+
+                var gfx = XGraphics.FromPdfPage(page);
+                gfx.DrawString("Lista de Estudiantes", fontBold, XBrushes.Black, 20, 40);
+                gfx.DrawString("ID", fontNormal, XBrushes.Black, 20, 80);
+                gfx.DrawString("Nombre", fontNormal, XBrushes.Black, 100, 80);
+                gfx.DrawString("Email", fontNormal, XBrushes.Black, 300, 80);
+
+                int yPosition = 100;
+                foreach (var estudiante in estudiantesList)
+                {
+                    gfx.DrawString(estudiante.id.ToString(), fontNormal, XBrushes.Black, 20, yPosition);
+                    gfx.DrawString(estudiante.nombre, fontNormal, XBrushes.Black, 100, yPosition);
+                    gfx.DrawString(estudiante.correo, fontNormal, XBrushes.Black, 300, yPosition);
+                    yPosition += 20;
+                }
+
+                using (var stream = new MemoryStream())
+                {
+                    document.Save(stream, false);
+                    stream.Position = 0;
+                    return File(stream.ToArray(), "application/pdf", "Estudiantes.pdf");
+                }
+            }
+        }
+
+    }
+}
+
+    
     
 
-}
-}
+

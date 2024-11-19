@@ -5,8 +5,10 @@
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public int Total { get; set; }
+        public object Errors { get; }
+        public T Result { get; }
 
-        public PagedResponse(T data, int pageNumber, int pageSize, int total = 0)
+        public PagedResponse(T data, int pageNumber, int pageSize, int total = 0, T result = default)
         {
             this.PageNumber = pageNumber;
             this.PageSize = pageSize;
@@ -15,6 +17,7 @@
             this.Message = null;
             this.Succeeded = true;
             this.Errors = null;
+            Result = result;
         }
     }
 }
